@@ -1,49 +1,65 @@
 import { supabase } from './supabase';
+import type { AuthSession } from '@supabase/supabase-js';
 
-// This function creates a new user profile record in the 'profiles' table.
-// It is typically called right after a new user signs up.
-export const createProfile = async (user_id: string, username: string) => {
-  const { data, error } = await supabase
-    .from('profiles')
-    .insert([
-      {
-        user_id,
-        username,
-      },
-    ]);
-
-  if (error) {
-    throw new Error(error.message);
+// Fetches the user's profile from the 'profiles' table.
+export async function getProfile(session: AuthSession | null) {
+  if (!session) {
+    console.error('No active session.');
+    return null;
   }
 
-  return data;
-};
+  try {
+    const { data, error, status } = await supabase
+      .from('profiles')
+      .select('username, language_pref') // Select the columns you need
+      .eq('user_id', session.user.id) // Filter by the logged-in user's ID
+      .single(); // Ensure only a single record is returned
 
-// This function retrieves a user's profile from the 'profiles' table.
-export const getProfile = async (user_id: string) => {
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('user_id', user_id)
-    .single();
+    if (error && status !== 406) {
+      console.error('Error fetching profile:', error);
+      return null;
+    }
 
-  if (error) {
-    throw new Error(error.message);
+    return data;
+  } catch (err) {
+    console.error('An unexpected error occurred:', err);
+    return null;
   }
+}
 
-  return data;
-};
+// Updates the user's profile in the 'profiles' table.
+export async function updateProfile(session: AuthSession, updates: { username: string; language_pref: string }) {
+  try {
+    const { error } = await supabase
+      .from('profiles')
+      .update(updates)
+      .eq('user_id', session.user.id);
 
-// This function updates an existing user profile record.
-export const updateProfile = async (user_id: string, updates: Record<string, any>) => {
-  const { data, error } = await supabase
-    .from('profiles')
-    .update(updates)
-    .eq('user_id', user_id);
+    if (error) {
+      throw error;
+    }
 
-  if (error) {
-    throw new Error(error.message);
+    console.log('Profile updated successfully!');
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    return null;
   }
+}
 
-  return data;
-};
+// Creates a new profile for a newly signed-up user.
+export async function createProfile(user: any) {
+  try {
+    const { error } = await supabase.from('profiles').insert({
+      user_id: user.id,
+      username: user.email?.split('@')[0], // Use email prefix as a default username
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    console.log('Profile created successfully!');
+  } catch (error) {
+    console.error('Error creating new profile:', error);
+  }
+}
