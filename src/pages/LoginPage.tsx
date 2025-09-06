@@ -82,28 +82,28 @@ const LoginPage = () => {
           {error && <div className="alert alert-error mb-4 rounded-xl">{error}</div>}
           {successMessage && <div className="alert alert-success mb-4 rounded-xl">{successMessage}</div>}
 
-          <div className="form-control mb-4">
-            <label className="label">
-              <span className="label-text font-semibold">Email</span>
+          <div className="form-control mb-6">
+            <label className="label mb-2">
+              <span className="label-text font-semibold text-gray-700">Email</span>
             </label>
             <input
               type="email"
               placeholder="your@email.com"
-              className="input input-bordered rounded-xl focus:ring-2 focus:ring-blue-500 transition-all"
+              className="input input-bordered rounded-xl focus:ring-2 focus:ring-blue-500 transition-all w-full"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
 
-          <div className="form-control mb-4">
-            <label className="label">
-              <span className="label-text font-semibold">Password</span>
+          <div className="form-control mb-6">
+            <label className="label mb-2">
+              <span className="label-text font-semibold text-gray-700">Password</span>
             </label>
             <input
               type="password"
               placeholder="••••••••"
-              className="input input-bordered rounded-xl focus:ring-2 focus:ring-blue-500 transition-all"
+              className="input input-bordered rounded-xl focus:ring-2 focus:ring-blue-500 transition-all w-full"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required

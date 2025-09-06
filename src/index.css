@@ -96,3 +96,164 @@ select:focus {
     transform: rotate(360deg);
   }
 }
+
+/* Layout stability fixes */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  /* Prevent layout shifts */
+  overflow-x: hidden;
+}
+
+/* Prevent layout shifts on form elements */
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* Stable card layouts */
+.card {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Prevent button layout shifts */
+.btn {
+  transition: all 0.2s ease-in-out;
+  transform-origin: center;
+}
+
+/* Stable form controls */
+.form-control {
+  position: relative;
+}
+
+/* Prevent layout jumps on focus */
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  transform: translateZ(0); /* Force hardware acceleration */
+}
+
+/* Smooth transitions for all interactive elements */
+button, a, input, textarea, select {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Prevent scrollbar layout shifts */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Mobile layout stability */
+@media (max-width: 768px) {
+  body {
+    padding: 0;
+  }
+
+  .card {
+    margin: 1rem;
+    max-width: calc(100vw - 2rem);
+  }
+}
+
+/* Prevent vertical bouncing and layout detachment */
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+  /* Prevent momentum scrolling issues on iOS */
+  -webkit-overflow-scrolling: touch;
+  /* Prevent layout shifts during scrolling */
+  contain: layout style paint;
+}
+
+/* Stable page layouts */
+.min-h-screen {
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for mobile */
+}
+
+/* Prevent content jumping */
+* {
+  /* Prevent layout shifts from font loading */
+  font-display: swap;
+}
+
+/* Stable hero sections */
+.hero {
+  /* Prevent layout shifts */
+  contain: layout style;
+}
+
+/* Prevent card content jumping */
+.card {
+  /* Maintain consistent height */
+  contain: layout style;
+}
+
+/* Stable form layouts */
+.form-control {
+  /* Prevent input height changes */
+  contain: layout style;
+}
+
+/* Prevent scrollbar-related layout shifts */
+::-webkit-scrollbar {
+  /* Ensure scrollbar doesn't cause layout shifts */
+  width: 8px !important;
+  height: 8px !important;
+}
+
+/* Additional stability for interactive elements */
+button, a, input, textarea, select {
+  /* Prevent layout shifts on interaction */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Prevent content reflow on image/icon loading */
+svg, img {
+  /* Maintain aspect ratios */
+  display: block;
+}
+
+/* Stable loading states */
+.loading {
+  /* Prevent size changes during animation */
+  contain: layout style paint;
+}
+
+/* Prevent layout shifts during loading states */
+.loading {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  border-right-color: transparent;
+  animation: spin 1s linear infinite;
+}

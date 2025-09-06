@@ -90,26 +90,26 @@ const ProfilePage = () => {
                 </div>
 
                 <div className="form-control mb-6">
-                  <label className="label">
+                  <label className="label mb-2">
                     <span className="label-text font-semibold text-gray-700">Email</span>
                   </label>
                   <input
                     type="email"
-                    className="input input-bordered rounded-xl bg-gray-50 cursor-not-allowed"
+                    className="input input-bordered rounded-xl bg-gray-50 cursor-not-allowed w-full"
                     value={user?.email || ''}
                     disabled
                   />
-                  <span className="label-text-alt text-gray-500 mt-1">Email cannot be changed</span>
+                  <span className="label-text-alt text-gray-500 mt-1 block">Email cannot be changed</span>
                 </div>
 
                 <div className="form-control mb-6">
-                  <label className="label">
+                  <label className="label mb-2">
                     <span className="label-text font-semibold text-gray-700">Username</span>
                   </label>
                   <input
                     type="text"
                     placeholder="Enter your username"
-                    className="input input-bordered rounded-xl focus:ring-2 focus:ring-purple-500 transition-all"
+                    className="input input-bordered rounded-xl focus:ring-2 focus:ring-purple-500 transition-all w-full"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
@@ -117,18 +117,18 @@ const ProfilePage = () => {
                 </div>
 
                 <div className="form-control mb-8">
-                  <label className="label">
+                  <label className="label mb-2">
                     <span className="label-text font-semibold text-gray-700">Language Preference</span>
                   </label>
                   <select
                     value={languagePref}
                     onChange={(e) => setLanguagePref(e.target.value)}
-                    className="select select-bordered rounded-xl focus:ring-2 focus:ring-purple-500 transition-all"
+                    className="select select-bordered rounded-xl focus:ring-2 focus:ring-purple-500 transition-all w-full"
                   >
                     <option value="en">English</option>
                     <option value="es">Español</option>
                   </select>
-                  <span className="label-text-alt text-gray-500 mt-1">
+                  <span className="label-text-alt text-gray-500 mt-1 block">
                     Choose your preferred language for the application
                   </span>
                 </div>
