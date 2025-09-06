@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../services/supabase';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { createProfile } from '../services/db';
 
@@ -120,14 +120,22 @@ const LoginPage = () => {
             </button>
           </div>
 
-          <div className="text-center mt-6">
+          <div className="text-center mt-6 space-y-2">
             <button
               type="button"
               onClick={() => setIsSigningUp(!isSigningUp)}
-              className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
+              className="text-blue-600 hover:text-blue-800 font-medium transition-colors block w-full"
             >
               {isSigningUp ? 'Already have an account? Sign In' : 'Need an account? Sign Up'}
             </button>
+            {!isSigningUp && (
+              <Link
+                to="/forgot-password"
+                className="text-sm text-gray-500 hover:text-gray-700 transition-colors block"
+              >
+                Forgot your password?
+              </Link>
+            )}
           </div>
         </form>
       </div>

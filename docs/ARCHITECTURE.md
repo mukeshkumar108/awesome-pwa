@@ -117,6 +117,7 @@ const { user, session, loading } = useAuth();
 - Loading states during authentication
 - Automatic redirect for authenticated users
 - Success/error message display
+- "Forgot Password?" link to password reset flow
 
 **State Management:**
 - Email, password, username form fields
@@ -128,6 +129,45 @@ const { user, session, loading } = useAuth();
 2. Supabase auth call (signInWithPassword or signUp)
 3. On success: redirect to dashboard
 4. On error: display error message
+
+**Password Reset Integration:**
+- Subtle "Forgot Password?" link below sign-in form
+- Links to dedicated forgot password page
+- Maintains clean, uncluttered design
+
+### Forgot Password Page (`src/pages/ForgotPasswordPage.tsx`)
+
+**Purpose:** Handles password reset email requests for users who forgot their password.
+
+**Features:**
+- Clean, simple email input form
+- Email validation and error handling
+- Loading states during email sending
+- Success confirmation with clear next steps
+- Consistent design with other auth pages
+
+**Password Reset Flow:**
+1. User enters email address
+2. Supabase sends password reset email with magic link
+3. User sees success message with instructions
+4. Email contains link to reset password page
+
+### Reset Password Page (`src/pages/ResetPasswordPage.tsx`)
+
+**Purpose:** Allows users to set a new password after clicking the reset link in their email.
+
+**Features:**
+- New password and confirmation fields
+- Password strength validation (minimum 6 characters)
+- Automatic session handling from email tokens
+- Success confirmation with automatic redirect
+- Secure password update via Supabase
+
+**Security Features:**
+- Validates password confirmation matching
+- Minimum password length requirements
+- Automatic session establishment from email tokens
+- Secure password update through Supabase auth
 
 ### Dashboard Page (`src/pages/DashboardPage.tsx`)
 
@@ -222,6 +262,8 @@ const { user, session, loading } = useAuth();
 **Public Routes:**
 - `/` - Login page
 - `/login` - Login page (alias)
+- `/forgot-password` - Password reset email request
+- `/reset-password` - Password reset form (accessed via email link)
 
 **Protected Routes:**
 - `/dashboard` - Main dashboard
@@ -235,6 +277,12 @@ const PrivateRoute = () => {
   return user ? <Outlet /> : <Navigate to="/login" replace />;
 };
 ```
+
+**Password Reset Flow:**
+1. User clicks "Forgot Password?" → `/forgot-password`
+2. User enters email → Supabase sends reset email
+3. User clicks email link → `/reset-password?token=...`
+4. User sets new password → Automatic redirect to dashboard
 
 ## Styling and UI
 
