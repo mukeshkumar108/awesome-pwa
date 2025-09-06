@@ -3,6 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../services/supabase';
 import { useAuth } from '../context/AuthContext';
 import { createProfile } from '../services/db';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -82,43 +85,40 @@ const LoginPage = () => {
           {error && <div className="alert alert-error mb-4 rounded-xl">{error}</div>}
           {successMessage && <div className="alert alert-success mb-4 rounded-xl">{successMessage}</div>}
 
-          <div className="form-control mb-6">
-            <label className="label mb-2">
-              <span className="label-text font-semibold text-gray-700">Email</span>
-            </label>
-            <input
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
               type="email"
               placeholder="your@email.com"
-              className="input input-bordered rounded-xl focus:ring-2 focus:ring-blue-500 transition-all w-full"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
 
-          <div className="form-control mb-6">
-            <label className="label mb-2">
-              <span className="label-text font-semibold text-gray-700">Password</span>
-            </label>
-            <input
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
               type="password"
               placeholder="••••••••"
-              className="input input-bordered rounded-xl focus:ring-2 focus:ring-blue-500 transition-all w-full"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
 
-          <div className="form-control mt-6">
-            <button
-              type="submit"
-              className={`btn btn-primary rounded-xl py-3 font-semibold text-lg hover:scale-105 transition-transform ${isLoading ? 'btn-disabled' : ''}`}
-            >
-              {isSigningUp ? 'Create Account' : 'Sign In'}
-              {isLoading && <span className="loading loading-spinner ml-2"></span>}
-            </button>
-          </div>
+          <Button type="submit" className="w-full mt-6" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                {isSigningUp ? 'Creating Account...' : 'Signing In...'}
+              </>
+            ) : (
+              isSigningUp ? 'Create Account' : 'Sign In'
+            )}
+          </Button>
 
           <div className="text-center mt-6 space-y-2">
             <button

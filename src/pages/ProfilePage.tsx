@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { getProfile, updateProfile } from '../services/db';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const ProfilePage = () => {
   const { user,session } = useAuth();
@@ -57,7 +68,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 p-4">
+    <div className="min-h-screen bg-background p-4">
       <div className="max-w-2xl mx-auto">
         <div className="hero min-h-[30vh] bg-gradient-to-r from-purple-500 to-pink-600 rounded-3xl mb-8 shadow-xl">
           <div className="hero-content text-center text-white">
@@ -68,84 +79,79 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        <div className="card bg-white shadow-lg rounded-2xl border border-gray-100">
-          <form className="card-body p-8" onSubmit={handleUpdate}>
-            {error && <div className="alert alert-error mb-6 rounded-xl">{error}</div>}
-            {success && <div className="alert alert-success mb-6 rounded-xl">{success}</div>}
+        <Card>
+          <CardHeader>
+            <CardTitle>Profile Settings</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleUpdate} className="space-y-6">
+              {error && <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">{error}</div>}
+              {success && <div className="p-3 text-sm text-green-600 bg-green-50 rounded-md">{success}</div>}
 
-            {loading ? (
-              <div className="flex justify-center py-8">
-                <span className="loading loading-spinner loading-lg"></span>
-              </div>
-            ) : (
-              <>
-                <div className="mb-6">
-                  <div className="avatar placeholder mb-4">
-                    <div className="bg-neutral text-neutral-content rounded-full w-24 h-24">
-                      <span className="text-3xl font-bold">{username?.charAt(0)?.toUpperCase() || 'U'}</span>
+              {loading ? (
+                <div className="flex justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              ) : (
+                <>
+                  <div className="text-center mb-6">
+                    <div className="avatar placeholder mb-4">
+                      <div className="bg-muted text-muted-foreground rounded-full w-24 h-24 flex items-center justify-center">
+                        <span className="text-3xl font-bold">{username?.charAt(0)?.toUpperCase() || 'U'}</span>
+                      </div>
                     </div>
+                    <h3 className="text-2xl font-bold">{username || 'User'}</h3>
+                    <p className="text-muted-foreground">{user?.email}</p>
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-800">{username || 'User'}</h3>
-                  <p className="text-gray-600">{user?.email}</p>
-                </div>
 
-                <div className="form-control mb-6">
-                  <label className="label mb-2">
-                    <span className="label-text font-semibold text-gray-700">Email</span>
-                  </label>
-                  <input
-                    type="email"
-                    className="input input-bordered rounded-xl bg-gray-50 cursor-not-allowed w-full"
-                    value={user?.email || ''}
-                    disabled
-                  />
-                  <span className="label-text-alt text-gray-500 mt-1 block">Email cannot be changed</span>
-                </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={user?.email || ''}
+                      disabled
+                      className="bg-muted"
+                    />
+                    <p className="text-sm text-muted-foreground">Email cannot be changed</p>
+                  </div>
 
-                <div className="form-control mb-6">
-                  <label className="label mb-2">
-                    <span className="label-text font-semibold text-gray-700">Username</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Enter your username"
-                    className="input input-bordered rounded-xl focus:ring-2 focus:ring-purple-500 transition-all w-full"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="username">Username</Label>
+                    <Input
+                      id="username"
+                      type="text"
+                      placeholder="Enter your username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      required
+                    />
+                  </div>
 
-                <div className="form-control mb-8">
-                  <label className="label mb-2">
-                    <span className="label-text font-semibold text-gray-700">Language Preference</span>
-                  </label>
-                  <select
-                    value={languagePref}
-                    onChange={(e) => setLanguagePref(e.target.value)}
-                    className="select select-bordered rounded-xl focus:ring-2 focus:ring-purple-500 transition-all w-full"
-                  >
-                    <option value="en">English</option>
-                    <option value="es">Español</option>
-                  </select>
-                  <span className="label-text-alt text-gray-500 mt-1 block">
-                    Choose your preferred language for the application
-                  </span>
-                </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="language">Language Preference</Label>
+                    <Select value={languagePref} onValueChange={setLanguagePref}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a language" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="en">English</SelectItem>
+                        <SelectItem value="es">Español</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-sm text-muted-foreground">
+                      Choose your preferred language for the application
+                    </p>
+                  </div>
 
-                <div className="form-control">
-                  <button
-                    type="submit"
-                    className={`btn btn-primary rounded-xl py-3 font-semibold text-lg hover:scale-105 transition-transform w-full ${loading ? 'btn-disabled' : ''}`}
-                  >
-                    {loading && <span className="loading loading-spinner mr-2"></span>}
-                    Update Profile
-                  </button>
-                </div>
-              </>
-            )}
-          </form>
-        </div>
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? 'Updating...' : 'Update Profile'}
+                  </Button>
+                </>
+              )}
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

@@ -41,24 +41,7 @@ a:hover {
   color: #535bf2;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 2px solid #646cff;
-  outline-offset: 2px;
-}
+
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
@@ -75,13 +58,7 @@ button:focus-visible {
   background: #a8a8a8;
 }
 
-/* Focus styles for better accessibility */
-input:focus,
-textarea:focus,
-select:focus {
-  outline: 2px solid #646cff;
-  outline-offset: 2px;
-}
+
 
 /* Loading animation improvements */
 .loading {
@@ -138,16 +115,7 @@ input, textarea, select {
   position: relative;
 }
 
-/* Prevent layout jumps on focus */
-input:focus, textarea:focus, select:focus {
-  outline: none;
-  transform: translateZ(0); /* Force hardware acceleration */
-}
 
-/* Smooth transitions for all interactive elements */
-button, a, input, textarea, select {
-  transition: all 0.2s ease-in-out;
-}
 
 /* Prevent scrollbar layout shifts */
 ::-webkit-scrollbar {
@@ -227,13 +195,7 @@ html, body {
   height: 8px !important;
 }
 
-/* Additional stability for interactive elements */
-button, a, input, textarea, select {
-  /* Prevent layout shifts on interaction */
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000px;
-}
+
 
 /* Prevent content reflow on image/icon loading */
 svg, img {
@@ -256,4 +218,80 @@ svg, img {
   border-radius: 50%;
   border-right-color: transparent;
   animation: spin 1s linear infinite;
+}
+
+@layer base {
+  :root {
+    /* Custom Brand Variables - Easy to change for different projects */
+    --brand-primary: #3b82f6;
+    --brand-primary-dark: #2563eb;
+    --brand-primary-light: #60a5fa;
+    --brand-secondary: #8b5cf6;
+    --brand-accent: #f59e0b;
+    --brand-success: #10b981;
+    --brand-warning: #f59e0b;
+    --brand-error: #ef4444;
+
+    /* Shadcn Variables (using our brand colors) */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: var(--brand-primary);
+    --primary-foreground: 0 0% 98%;
+    --secondary: var(--brand-secondary);
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: var(--brand-accent);
+    --accent-foreground: 0 0% 9%;
+    --destructive: var(--brand-error);
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: var(--brand-primary);
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.75rem;
+  }
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }

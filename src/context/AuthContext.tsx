@@ -7,6 +7,7 @@ interface AuthContextType {
   session: Session | null;
   user: User | null;
   loading: boolean;
+  signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -33,8 +34,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
+  const signOut = async () => {
+    try {
+      // Try server logout first
+      await supabase.auth.signOut({ scope: 'global' });
+    } catch (error) {
+      console.warn('Server logout failed, proceeding with local logout:', error);
+    }
+
+    // Always clear local session
+    try {
+      await supabase.auth.signOut({ scope: 'local' });
+    } catch (localError) {
+      console.warn('Local logout failed:', localError);
+    }
+
+    // Clear any additional local storage
+    localStorage.clear();
+    sessionStorage.clear();
+  };
+
   // The context value provides the session, user, and loading state to children.
-  const value = { session, user, loading };
+  const value = { session, user, loading, signOut };
 
   return (
     <AuthContext.Provider value={value}>
