@@ -134,12 +134,19 @@ const { user, session, loading } = useAuth();
 **Purpose:** Main authenticated view displaying user dashboard with quick actions.
 
 **Features:**
-- Personalized welcome message
+- Personalized welcome message using user's custom username from profile
+- Fetches user profile data to display actual username
 - Feature cards with icons and descriptions
 - Quick action buttons
 - Sign-out functionality
 
 **Protected Route:** Requires authentication via PrivateRoute component.
+
+**Username Integration:**
+- Fetches profile data on component mount
+- Displays `profile.username` in welcome message
+- Falls back to email prefix if profile not loaded
+- Updates automatically when user changes username in profile
 
 ### Profile Page (`src/pages/ProfilePage.tsx`)
 
@@ -148,16 +155,23 @@ const { user, session, loading } = useAuth();
 **Features:**
 - View current profile information
 - Update username
+- Language preference selection (English/Spanish)
 - Avatar display (placeholder with user initials)
 - Form validation and error handling
 - Success/error feedback
 
 **Data Flow:**
-1. Fetch profile on component mount
-2. Display current data
-3. Handle form submission
+1. Fetch profile on component mount (includes username and language_pref)
+2. Display current data with pre-selected language preference
+3. Handle form submission with both username and language updates
 4. Update profile via database service
 5. Show success/error messages
+
+**Language Support:**
+- English (en) - Default
+- Spanish (es)
+- Stored in `language_pref` database field
+- Ready for future i18n implementation
 
 ## Core Components
 

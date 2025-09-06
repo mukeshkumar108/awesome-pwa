@@ -1,11 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../services/supabase';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { getProfile } from '../services/db';
 
 const DashboardPage = () => {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const navigate = useNavigate();
+  const [profile, setProfile] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (session) {
+        const userProfile = await getProfile(session);
+        setProfile(userProfile);
+      }
+    };
+    fetchUserProfile();
+  }, [session]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -18,7 +30,7 @@ const DashboardPage = () => {
         <div className="hero min-h-[50vh] bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl mb-8 shadow-xl">
           <div className="hero-content text-center text-white">
             <div className="max-w-md">
-              <h1 className="text-5xl font-bold mb-4">Welcome back, {user?.email?.split('@')[0]}!</h1>
+              <h1 className="text-5xl font-bold mb-4">Welcome back, {profile?.username || user?.email?.split('@')[0]}!</h1>
               <p className="text-xl opacity-90">Ready to build something amazing?</p>
             </div>
           </div>

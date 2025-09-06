@@ -3,25 +3,27 @@ import { useAuth } from '../context/AuthContext';
 import { getProfile, updateProfile } from '../services/db';
 
 const ProfilePage = () => {
-  const { user } = useAuth();
+  const { user,session } = useAuth();
   const [username, setUsername] = useState('');
+  const [languagePref, setLanguagePref] = useState('en');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   useEffect(() => {
-    if (user) {
+    if (session) {
       fetchProfile();
     }
-  }, [user]);
+  }, [session]);
 
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      if (!user?.id) throw new Error('User not authenticated.');
-      const profile = await getProfile(user.id);
+      if (!session) throw new Error('User not authenticated.');
+      const profile = await getProfile(session);
       if (profile) {
-        setUsername(profile.username);
+        setUsername(profile.username || '');
+        setLanguagePref(profile.language_pref || 'en');
       }
     } catch (err: any) {
       setError('Error fetching profile: ' + err.message);
@@ -32,18 +34,25 @@ const ProfilePage = () => {
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('--- Submitting Update ---');
+    console.log('Username from form state:', username);
+    console.log('Current session object:', session);
+
     try {
       setLoading(true);
       setError('');
       setSuccess('');
-      if (!user?.id) throw new Error('User not authenticated.');
+      if (!session) throw new Error('User not authenticated.');
 
-      await updateProfile(user.id, { username });
+      await updateProfile(session, { username, language_pref: languagePref });
       setSuccess('Profile updated successfully!');
+      console.log('Update was successful!');
     } catch (err: any) {
       setError('Error updating profile: ' + err.message);
+      console.error('Update failed. Error:', err);
     } finally {
       setLoading(false);
+      console.log('--- Update Attempt Finished ---');
     }
   };
 
@@ -93,7 +102,7 @@ const ProfilePage = () => {
                   <span className="label-text-alt text-gray-500 mt-1">Email cannot be changed</span>
                 </div>
 
-                <div className="form-control mb-8">
+                <div className="form-control mb-6">
                   <label className="label">
                     <span className="label-text font-semibold text-gray-700">Username</span>
                   </label>
@@ -105,6 +114,23 @@ const ProfilePage = () => {
                     onChange={(e) => setUsername(e.target.value)}
                     required
                   />
+                </div>
+
+                <div className="form-control mb-8">
+                  <label className="label">
+                    <span className="label-text font-semibold text-gray-700">Language Preference</span>
+                  </label>
+                  <select
+                    value={languagePref}
+                    onChange={(e) => setLanguagePref(e.target.value)}
+                    className="select select-bordered rounded-xl focus:ring-2 focus:ring-purple-500 transition-all"
+                  >
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                  </select>
+                  <span className="label-text-alt text-gray-500 mt-1">
+                    Choose your preferred language for the application
+                  </span>
                 </div>
 
                 <div className="form-control">

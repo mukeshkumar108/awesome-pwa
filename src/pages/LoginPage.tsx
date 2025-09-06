@@ -7,7 +7,6 @@ import { createProfile } from '../services/db';
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
   const [isSigningUp, setIsSigningUp] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -56,7 +55,7 @@ const LoginPage = () => {
     } else if (data.user) {
       // Create a new user profile after successful sign-up.
       try {
-        await createProfile(data.user.id, username);
+        await createProfile(data.user);
         setSuccessMessage('Successfully signed up! Please check your email for a confirmation link.');
       } catch (dbError) {
         setError("Error creating user profile.");
@@ -110,22 +109,6 @@ const LoginPage = () => {
               required
             />
           </div>
-
-          {isSigningUp && (
-            <div className="form-control mb-4">
-              <label className="label">
-                <span className="label-text font-semibold">Username</span>
-              </label>
-              <input
-                type="text"
-                placeholder="Choose a username"
-                className="input input-bordered rounded-xl focus:ring-2 focus:ring-blue-500 transition-all"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-            </div>
-          )}
 
           <div className="form-control mt-6">
             <button
