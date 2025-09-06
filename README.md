@@ -34,7 +34,31 @@ npm run dev
 │   └── main.tsx            # App entry point
 ├── .env.local              # Secure environment variables (local)
 ├── tailwind.config.cjs     # Tailwind configuration
-└── postcss.config.cjs      # PostCSS configuration
+├── postcss.config.cjs      # PostCSS configuration
+└── docs/                   # Comprehensive agent workflow system
+    ├── AGENT_RULES.md      # Agent operating protocols
+    ├── HUMAN_PLAYBOOK.md   # Human collaboration guide
+    ├── AGENT_WORKFLOW.md   # Agent quick-start
+    └── [13 more docs]      # Complete workflow system
+```
+
+## 🤖 Agent Collaboration
+
+This project features a comprehensive agent workflow system for efficient AI-human collaboration:
+
+**For Humans:** Start with `/docs/HUMAN_PLAYBOOK.md` for collaboration tips and example prompts
+**For Agents:** Begin with `/docs/AGENT_WORKFLOW.md` for project context and protocols
+**Token Estimates:** Simple (2-5k), Complex (5-15k), Architecture (10-25k)
+
+**Quick Start Prompt:**
+```
+We have an agent workflow system. Please read:
+/docs/AGENT_RULES.md
+/docs/AGENT_WORKFLOW.md
+/docs/VERSION.md
+/docs/CHANGELOG.md
+
+Then help me: [your task]
 ```
 
 ## Contributing
