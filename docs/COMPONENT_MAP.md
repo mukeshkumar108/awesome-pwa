@@ -37,6 +37,19 @@ Visual representation of component relationships, data flow, and architectural p
 ### Pages → Components Flow
 
 ```
+App Entry Point
+├── SplashScreen (dark theme, shows immediately on load)
+│   ├── Logo placeholder
+│   ├── Loading animation
+│   └── Smooth fade-out to main app
+
+OnboardingPage (for new users)
+├── OnboardingWizard (manages 3-step flow)
+│   ├── OnboardingLayout (progress bar, navigation)
+│   ├── NameStep (saves to profiles.username)
+│   ├── ReferralStep (Instagram, Facebook, TikTok, Friend)
+│   └── ObjectivesStep (multi-select goals)
+
 DashboardPage
 ├── Layout (provides navigation structure)
 │   ├── Navbar (user menu, sign out)
@@ -53,7 +66,7 @@ ProfilePage
 LoginPage
 ├── Form components
 ├── Loading states
-└── Navigation links
+└── Navigation links (redirects to /onboarding)
 
 ForgotPasswordPage / ResetPasswordPage
 ├── Minimal form components

@@ -5,6 +5,75 @@ All notable changes to the Awesome PWA project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2025-11-09 - User Onboarding & UX Overhaul
+
+### Added
+- **Complete User Onboarding System**
+  - 3-step onboarding wizard with progress indicators
+  - Name collection (saves to profiles.username)
+  - Referral source tracking (single-select: Instagram, Facebook, TikTok, Friend)
+  - User objectives (multi-select: Be happier, Better thoughts, Less stressed)
+  - Skip functionality for testing and user choice
+  - Auto-save progress between steps
+
+- **Splash Screen Component**
+  - Dark theme matching button colors (#1f2937)
+  - White text with logo placeholder
+  - Smooth fade-out animation (2.5s duration)
+  - Shows immediately on app load
+  - Loading indicator with spinning animation
+
+- **Database Schema Extensions**
+  - Added `onboarding_completed` boolean field
+  - Added `referral_source` text field
+  - Added `objectives` text array field
+  - Updated SUPABASE_SETUP.md with new fields
+
+### Changed
+- **UI/UX Design Overhaul**
+  - Switched from gradient to clean white background theme
+  - Left-aligned title and description text
+  - Added 4px rounded corners to all interactive elements
+  - Full-width input fields
+  - Simplified multi-select (removed check icons, kept visual feedback)
+
+- **Real-time Button Activation**
+  - Fixed onboarding button activation to work immediately on user input
+  - Mobile-friendly touch interactions
+  - Removed keyboard dependencies for better mobile UX
+
+- **Semantic CSS Architecture**
+  - Created semantic class names for maintainability
+  - CSS custom properties for consistent theming
+  - Replaced hardcoded Tailwind with semantic classes
+  - Utility classes for layout patterns
+
+### Technical Improvements
+- **Onboarding State Management**
+  - Integrated with auth flow
+  - Automatic redirection to onboarding for new users
+  - Completion tracking and dashboard access control
+
+- **Component Architecture**
+  - Modular onboarding system in `/src/pages/onboarding/`
+  - Reusable layout components with semantic classes
+  - TypeScript interfaces for type safety
+  - Clean separation of concerns
+
+- **Mobile Optimization**
+  - Touch-friendly 56px button heights (h-14)
+  - Responsive grid layouts
+  - Optimized animation performance
+  - Mobile-first CSS approach
+
+### Documentation
+- Updated SUPABASE_SETUP.md with onboarding fields
+- Enhanced CHANGELOG.md with detailed change tracking
+- Added semantic class documentation in CSS
+- Updated component relationships in COMPONENT_MAP.md
+
+---
+
 ## [1.0.0] - 2025-06-09 - Agent Workflow Foundation
 
 ### Added

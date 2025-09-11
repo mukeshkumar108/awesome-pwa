@@ -1,9 +1,18 @@
 # Documentation Version Control
 
 ## Current Version
-**v1.0.0** - Agent Workflow Foundation
+**v2.0.0** - User Onboarding & UX Overhaul
 
 ## Version History
+
+### v2.0.0 (2025-11-09)
+- ✅ **Major Release:** User Onboarding & UX Overhaul
+  - Complete 3-step onboarding wizard system
+  - Dark theme splash screen with smooth animations
+  - White background theme with semantic CSS classes
+  - Mobile-first design with real-time button activation
+  - Database schema extensions for user data
+  - Integrated authentication and routing flow
 
 ### v1.0.0 (2025-06-09)
 - ✅ **Phase 1 Complete:** Agent Foundation Established
