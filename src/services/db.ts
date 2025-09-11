@@ -11,7 +11,7 @@ export async function getProfile(session: AuthSession | null) {
   try {
     const { data, error, status } = await supabase
       .from('profiles')
-      .select('username, language_pref') // Select the columns you need
+      .select('*') // Select all columns including onboarding fields
       .eq('user_id', session.user.id) // Filter by the logged-in user's ID
       .single(); // Ensure only a single record is returned
 
@@ -28,7 +28,7 @@ export async function getProfile(session: AuthSession | null) {
 }
 
 // Updates the user's profile in the 'profiles' table.
-export async function updateProfile(session: AuthSession, updates: { username: string; language_pref: string }) {
+export async function updateProfile(session: AuthSession, updates: Record<string, any>) {
   try {
     const { error } = await supabase
       .from('profiles')

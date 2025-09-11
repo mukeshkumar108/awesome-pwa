@@ -47,6 +47,10 @@ CREATE TABLE profiles (
   user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   username TEXT,
   language_pref TEXT DEFAULT 'en',
+  -- Onboarding fields
+  onboarding_completed BOOLEAN DEFAULT FALSE,
+  referral_source TEXT,
+  objectives TEXT[], -- Array for multi-select objectives
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

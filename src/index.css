@@ -295,3 +295,230 @@ svg, img {
     @apply bg-background text-foreground;
   }
 }
+
+/* ==========================================================================
+   ONBOARDING THEME - Semantic Classes
+   ========================================================================== */
+
+@layer components {
+  /* Onboarding Theme Variables */
+  .onboarding-theme {
+    --onboarding-bg: #ffffff;
+    --onboarding-bg-secondary: #f9fafb;
+    --onboarding-text-primary: #1f2937;
+    --onboarding-text-secondary: #6b7280;
+    --onboarding-text-muted: #9ca3af;
+    --onboarding-border: #e5e7eb;
+    --onboarding-border-hover: #d1d5db;
+    --onboarding-button-primary: #1f2937;
+    --onboarding-button-primary-text: #ffffff;
+    --onboarding-button-primary-hover: #111827;
+    --onboarding-button-outline: #6b7280;
+    --onboarding-button-outline-border: #d1d5db;
+    --onboarding-button-outline-text: #374151;
+    --onboarding-button-outline-hover: #4b5563;
+    --onboarding-button-outline-hover-border: #9ca3af;
+    --onboarding-input-bg: #ffffff;
+    --onboarding-input-border: #d1d5db;
+    --onboarding-input-text: #1f2937;
+    --onboarding-input-placeholder: #9ca3af;
+    --onboarding-progress-bg: #e5e7eb;
+    --onboarding-progress-fill: #1f2937;
+  }
+
+  /* Main Container */
+  .onboarding-container {
+    @apply min-h-screen flex flex-col;
+    background-color: var(--onboarding-bg);
+  }
+
+  /* Header Section */
+  .onboarding-header {
+    @apply pt-8 px-4;
+  }
+
+  .onboarding-title {
+    @apply text-2xl font-bold mb-2;
+    color: var(--onboarding-text-primary);
+  }
+
+  .onboarding-description {
+    @apply text-base leading-relaxed;
+    color: var(--onboarding-text-secondary);
+  }
+
+  /* Progress Section */
+  .onboarding-progress {
+    @apply max-w-md mx-auto mb-2;
+  }
+
+  .onboarding-progress-label {
+    @apply flex items-center justify-between mb-2;
+    color: var(--onboarding-text-secondary);
+  }
+
+  .onboarding-progress-bar {
+    @apply w-full rounded-full h-2;
+    background-color: var(--onboarding-progress-bg);
+  }
+
+  .onboarding-progress-fill {
+    @apply h-2 rounded-full transition-all duration-300 ease-out;
+    background-color: var(--onboarding-progress-fill);
+  }
+
+  /* Content Section */
+  .onboarding-content {
+    @apply flex-1 flex flex-col justify-center px-4;
+  }
+
+  .onboarding-content-inner {
+    @apply max-w-md mx-auto w-full;
+  }
+
+  /* Actions Section */
+  .onboarding-actions {
+    @apply sticky bottom-0 bg-white/95 backdrop-blur-sm border-t px-4 py-4;
+    border-color: var(--onboarding-border);
+  }
+
+  .onboarding-actions-container {
+    @apply max-w-md mx-auto flex items-center gap-3;
+  }
+
+  /* Button Styles */
+  .onboarding-button-primary {
+    @apply flex-1 h-12 px-6 rounded-md font-medium transition-colors duration-200;
+    background-color: var(--onboarding-button-primary);
+    color: var(--onboarding-button-primary-text);
+  }
+
+  .onboarding-button-primary:hover:not(:disabled) {
+    background-color: var(--onboarding-button-primary-hover);
+  }
+
+  .onboarding-button-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .onboarding-button-outline {
+    @apply flex-1 h-12 px-6 rounded-md font-medium transition-colors duration-200 border;
+    background-color: transparent;
+    color: var(--onboarding-button-outline-text);
+    border-color: var(--onboarding-button-outline-border);
+  }
+
+  .onboarding-button-outline:hover:not(:disabled) {
+    color: var(--onboarding-button-outline-hover);
+    border-color: var(--onboarding-button-outline-hover-border);
+  }
+
+  /* Step Options (Referral/Objectives) */
+  .onboarding-step-option {
+    @apply w-full h-14 text-base font-medium transition-all duration-200 border rounded-md;
+    background-color: var(--onboarding-bg);
+    color: var(--onboarding-text-primary);
+    border-color: var(--onboarding-button-outline-border);
+  }
+
+  .onboarding-step-option:hover {
+    border-color: var(--onboarding-button-outline-hover-border);
+    background-color: var(--onboarding-bg-secondary);
+  }
+
+  .onboarding-step-option.selected {
+    background-color: var(--onboarding-button-primary);
+    color: var(--onboarding-button-primary-text);
+    border-color: var(--onboarding-button-primary);
+  }
+
+  .onboarding-step-option.selected:hover {
+    background-color: var(--onboarding-button-primary-hover);
+  }
+
+  /* Form Inputs */
+  .onboarding-input {
+    @apply bg-white border h-12 text-base px-3 rounded-md;
+    color: var(--onboarding-input-text);
+    background-color: var(--onboarding-input-bg);
+    border-color: var(--onboarding-input-border);
+  }
+
+  .onboarding-input:focus {
+    @apply ring-2 outline-none;
+    ring-color: var(--onboarding-button-primary);
+    border-color: var(--onboarding-button-primary);
+  }
+
+  .onboarding-input::placeholder {
+    color: var(--onboarding-input-placeholder);
+  }
+
+  /* Form Labels */
+  .onboarding-label {
+    @apply text-base font-medium mb-2 block;
+    color: var(--onboarding-text-primary);
+  }
+
+  /* Helper Text */
+  .onboarding-helper-text {
+    @apply text-sm mt-1;
+    color: var(--onboarding-text-muted);
+  }
+
+  /* Skip Link */
+  .onboarding-skip-link {
+    @apply text-center mt-3;
+  }
+
+  .onboarding-skip-button {
+    @apply text-sm underline transition-colors duration-200;
+    color: var(--onboarding-text-muted);
+  }
+
+  .onboarding-skip-button:hover {
+    color: var(--onboarding-button-outline-hover);
+  }
+
+  /* Error Messages */
+  .onboarding-error {
+    @apply text-sm mt-1 text-red-600;
+  }
+
+  /* Selected Indicators */
+  .onboarding-selection-indicator {
+    @apply px-3 py-1 rounded-full text-sm;
+    background-color: var(--onboarding-button-primary);
+    color: var(--onboarding-button-primary-text);
+  }
+
+  /* Layout Utilities */
+  .onboarding-flex-column {
+    @apply flex flex-col;
+  }
+
+  .onboarding-flex-between {
+    @apply flex items-center justify-between;
+  }
+
+  .onboarding-flex-center {
+    @apply flex items-center justify-center;
+  }
+
+  .onboarding-text-center {
+    @apply text-center;
+  }
+
+  .onboarding-space-y {
+    @apply space-y-6;
+  }
+
+  .onboarding-space-y-small {
+    @apply space-y-3;
+  }
+
+  .onboarding-grid-cols-2 {
+    @apply grid grid-cols-2 gap-3;
+  }
+}

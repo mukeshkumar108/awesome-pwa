@@ -27,9 +27,9 @@ const LoginPage = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    // If a user is already authenticated, redirect them to the dashboard.
+    // If a user is already authenticated, redirect them to check onboarding status.
     if (user) {
-      navigate('/dashboard', { replace: true });
+      navigate('/onboarding', { replace: true });
     }
   }, [user, navigate]);
 
