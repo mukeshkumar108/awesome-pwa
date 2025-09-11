@@ -1,6 +1,8 @@
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Layout from './components/Layout';
+import { SplashScreen } from './components/SplashScreen';
 import LoginPage from './pages/LoginPage';
 import { OnboardingPage } from './pages/OnboardingPage';
 import DashboardPage from './pages/DashboardPage';
@@ -23,6 +25,27 @@ const PrivateRoute = () => {
 };
 
 function App() {
+  const [showSplash, setShowSplash] = useState(true);
+  const [appReady, setAppReady] = useState(false);
+
+  useEffect(() => {
+    // Simulate app initialization time
+    const initTimer = setTimeout(() => {
+      setAppReady(true);
+    }, 500);
+
+    return () => clearTimeout(initTimer);
+  }, []);
+
+  const handleSplashComplete = () => {
+    setShowSplash(false);
+  };
+
+  // Show splash screen until both app is ready and splash is complete
+  if (showSplash || !appReady) {
+    return <SplashScreen onComplete={handleSplashComplete} />;
+  }
+
   return (
     <Router>
       <AuthProvider>
