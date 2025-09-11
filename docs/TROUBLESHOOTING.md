@@ -52,6 +52,7 @@ SELECT * FROM profiles LIMIT 1; -- Should work if RLS is correct
 2. Check user exists in auth.users table
 3. Ensure profile exists in profiles table (auto-created on signup)
 4. Test: Go to Profile page → Check if profile loads
+5. **CRITICAL**: Verify INSERT policy has WITH CHECK clause (see SUPABASE_SETUP.md)
 
 ---
 

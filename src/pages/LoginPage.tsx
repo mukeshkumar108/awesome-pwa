@@ -6,6 +6,14 @@ import { createProfile } from '../services/db';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -71,74 +79,83 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 flex items-center justify-center p-4">
-      <div className="card w-full max-w-md shadow-2xl bg-white/90 backdrop-blur-sm rounded-3xl border border-white/20">
-        <form className="card-body p-8" onSubmit={isSigningUp ? handleSignUp : handleSignIn}>
-          <div className="text-center mb-6">
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-              {isSigningUp ? 'Create Account' : 'Welcome Back'}
-            </h2>
-            <p className="text-gray-600">
-              {isSigningUp ? 'Join our awesome community' : 'Sign in to your account'}
-            </p>
-          </div>
+      <form onSubmit={isSigningUp ? handleSignUp : handleSignIn}>
+        <Card className="w-full max-w-sm">
+          <CardHeader>
+            <CardTitle>{isSigningUp ? 'Create Account' : 'Login to your account'}</CardTitle>
+            <CardDescription>
+              {isSigningUp ? 'Join our awesome community' : 'Enter your email below to login to your account'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-6">
+              {error && (
+                <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">{error}</div>
+              )}
+              {successMessage && (
+                <div className="text-sm text-green-600 bg-green-50 p-3 rounded-md">{successMessage}</div>
+              )}
 
-          {error && <div className="alert alert-error mb-4 rounded-xl">{error}</div>}
-          {successMessage && <div className="alert alert-success mb-4 rounded-xl">{successMessage}</div>}
-
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="your@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          <Button type="submit" className="w-full mt-6" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                {isSigningUp ? 'Creating Account...' : 'Signing In...'}
-              </>
-            ) : (
-              isSigningUp ? 'Create Account' : 'Sign In'
-            )}
-          </Button>
-
-          <div className="text-center mt-6 space-y-2">
-            <button
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="grid gap-2">
+                <div className="flex items-center">
+                  <Label htmlFor="password">Password</Label>
+                  {!isSigningUp && (
+                    <Link
+                      to="/forgot-password"
+                      className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                    >
+                      Forgot your password?
+                    </Link>
+                  )}
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter className="flex-col gap-2">
+            <Button
+              type="submit"
+              variant="default"
+              className="w-full"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mr-2"></div>
+                  {isSigningUp ? 'Creating Account...' : 'Signing In...'}
+                </>
+              ) : (
+                isSigningUp ? 'Create Account' : 'Sign In'
+              )}
+            </Button>
+            <Button
               type="button"
+              variant="outline"
               onClick={() => setIsSigningUp(!isSigningUp)}
-              className="text-blue-600 hover:text-blue-800 font-medium transition-colors block w-full"
+              className="w-full"
             >
               {isSigningUp ? 'Already have an account? Sign In' : 'Need an account? Sign Up'}
-            </button>
-            {!isSigningUp && (
-              <Link
-                to="/forgot-password"
-                className="text-sm text-gray-500 hover:text-gray-700 transition-colors block"
-              >
-                Forgot your password?
-              </Link>
-            )}
-          </div>
-        </form>
-      </div>
+            </Button>
+          </CardFooter>
+        </Card>
+      </form>
     </div>
   );
 };

@@ -102,9 +102,12 @@ CREATE POLICY "Users can update own profile" ON profiles
 FOR UPDATE USING (auth.uid() = user_id);
 
 -- Allow users to insert their own profile (for signups)
+-- ⚠️ CRITICAL: WITH CHECK clause is required for INSERT policies
 CREATE POLICY "Users can insert own profile" ON profiles
 FOR INSERT WITH CHECK (auth.uid() = user_id);
 ```
+
+> **⚠️ Important**: The `WITH CHECK` clause in INSERT policies is critical. Without it, the policy allows inserts but doesn't validate them, which can cause profile creation to fail silently. Always include `WITH CHECK` in INSERT policies.
 
 ### Verify RLS Setup
 
@@ -178,6 +181,42 @@ SELECT * FROM profiles WHERE user_id = 'your-user-id';
 
 ## 🔧 Troubleshooting
 
+### Issue: INSERT Policy Missing WITH CHECK Clause
+
+**Symptoms**: User signup succeeds but profile is never created, no errors shown
+**Cause**: INSERT policy created without `WITH CHECK` clause, causing inserts to fail silently
+**Solution**:
+
+1. **Check current INSERT policy syntax**:
+```sql
+-- View the exact policy definition
+SELECT policyname, cmd, qual, with_check
+FROM pg_policies
+WHERE tablename = 'profiles' AND cmd = 'INSERT';
+```
+
+2. **If WITH_CHECK column is empty, fix the policy**:
+```sql
+-- Drop the incorrect policy
+DROP POLICY "Users can insert own profile" ON profiles;
+
+-- Re-create with proper WITH CHECK clause
+CREATE POLICY "Users can insert own profile" ON profiles
+FOR INSERT WITH CHECK (auth.uid() = user_id);
+```
+
+3. **Verify the fix**:
+```sql
+-- Should now show 'auth.uid() = user_id' in with_check column
+SELECT policyname, cmd, qual, with_check
+FROM pg_policies
+WHERE tablename = 'profiles' AND cmd = 'INSERT';
+```
+
+4. **Test profile creation**:
+   - Try signing up a new user
+   - Check if profile record is created in the profiles table
+
 ### Issue: 406 Not Acceptable Errors
 
 **Symptoms**: Profile fetch fails with 406 errors
@@ -210,17 +249,48 @@ ALTER TABLE profiles ADD PRIMARY KEY (user_id);
 
 ### Issue: Profile Not Created on Signup
 
-**Symptoms**: User can sign up but no profile record
-**Cause**: `createProfile` function failed or wasn't called
+**Symptoms**: User can sign up but no profile record exists
+**Cause**: Profile creation failed due to RLS policy issues, application errors, or missing triggers
 **Solution**:
-```sql
--- Check for existing profiles
-SELECT COUNT(*) FROM profiles;
 
--- Manually create profile for testing
+1. **Check for recent signups without profiles**:
+```sql
+-- Find users who signed up but have no profile
+SELECT au.id, au.email, au.created_at
+FROM auth.users au
+LEFT JOIN profiles p ON au.id = p.user_id
+WHERE p.user_id IS NULL
+ORDER BY au.created_at DESC
+LIMIT 5;
+```
+
+2. **Verify INSERT policy is correct**:
+```sql
+-- Check INSERT policy has WITH CHECK clause
+SELECT policyname, cmd, qual, with_check
+FROM pg_policies
+WHERE tablename = 'profiles' AND cmd = 'INSERT';
+```
+Expected: `with_check` column should contain `auth.uid() = user_id`
+
+3. **If policy is missing/incorrect, fix it**:
+```sql
+-- Drop incorrect policy
+DROP POLICY IF EXISTS "Users can insert own profile" ON profiles;
+
+-- Create correct policy
+CREATE POLICY "Users can insert own profile" ON profiles
+FOR INSERT WITH CHECK (auth.uid() = user_id);
+```
+
+4. **Test profile creation manually**:
+```sql
+-- Replace 'your-user-id' with actual UUID from step 1
 INSERT INTO profiles (user_id, username)
 VALUES ('your-user-id', 'testuser');
 ```
+
+5. **Check application logs** for any errors during signup process
 
 ### Issue: Environment Variables Not Loading
 
@@ -290,6 +360,7 @@ CREATE TRIGGER update_profiles_updated_at
 - [ ] Supabase project created
 - [ ] Profiles table exists with correct schema
 - [ ] RLS policies are active
+- [ ] INSERT policy has WITH CHECK clause
 - [ ] Environment variables configured
 - [ ] User registration works
 - [ ] Profile creation automatic
