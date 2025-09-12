@@ -1,14 +1,22 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { getProfile } from '../services/db';
+import { getMoodLogs, getEmojiForRating, formatMoodTimestamp } from '../services/mood';
+import { getGratitudeEntries, truncateGratitudeContent, formatGratitudeTimestamp } from '../services/gratitude';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import type { MoodLog } from '../services/mood';
+import type { GratitudeEntry } from '../services/gratitude';
 
 const DashboardPage = () => {
-  const { user, session, signOut } = useAuth();
+  const { session, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [profile, setProfile] = useState<any>(null);
+  const [recentMoods, setRecentMoods] = useState<MoodLog[]>([]);
+  const [recentGratitude, setRecentGratitude] = useState<GratitudeEntry[]>([]);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -20,78 +28,227 @@ const DashboardPage = () => {
     fetchUserProfile();
   }, [session]);
 
+  useEffect(() => {
+    loadRecentEntries();
+  }, []);
+
+  useEffect(() => {
+    // Check if user just completed logging (from navigation state)
+    const state = location.state as any;
+    if (state?.moodLogged || state?.gratitudeLogged) {
+      setShowSuccessMessage(true);
+      loadRecentEntries();
+      // Clear state after showing message
+      navigate('.', { replace: true });
+      // Hide success message after 3 seconds
+      setTimeout(() => setShowSuccessMessage(false), 3000);
+    }
+  }, [location.state]);
+
+  const loadRecentEntries = async () => {
+    try {
+      const [moods, gratitude] = await Promise.all([
+        getMoodLogs(10), // Last 10 mood entries
+        getGratitudeEntries(5) // Last 5 gratitude entries
+      ]);
+      setRecentMoods(moods);
+      setRecentGratitude(gratitude);
+    } catch (error) {
+      console.error('Error loading recent entries:', error);
+    }
+  };
+
   const handleSignOut = async () => {
     await signOut();
     navigate('/login', { replace: true });
   };
 
+  const handleLogMood = () => navigate('/mood/rating');
+  const handleViewMoodHistory = () => navigate('/mood/history');
+  const handleLogGratitude = () => navigate('/gratitude/today');
+  const handleViewGratitudeHistory = () => navigate('/gratitude/history');
+
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="hero min-h-[50vh] bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl mb-8 shadow-xl">
-          <div className="hero-content text-center text-white">
-            <div className="max-w-md">
-              <h1 className="text-5xl font-bold mb-4">Welcome back, {profile?.username || user?.email?.split('@')[0]}!</h1>
-              <p className="text-xl opacity-90">Ready to build something amazing?</p>
-            </div>
+    <div className="min-h-screen bg-gray-50 p-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Welcome Section */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Good to see you{profile?.username ? `, ${profile.username}` : ''}! 🌟
+          </h1>
+          <p className="text-gray-600">How are you feeling today?</p>
+        </div>
+
+        {/* Success Message */}
+        {showSuccessMessage && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 flex items-center gap-3">
+            <div className="text-green-500">✅</div>
+            <p className="text-green-800 font-medium">
+              Entry saved! Your response will appear below.
+            </p>
           </div>
-        </div>
+        )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mr-4">
-                  <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                  </svg>
-                </div>
-                <CardTitle className="text-lg">Analytics</CardTitle>
-              </div>
-              <p className="text-muted-foreground">View your app's performance metrics</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center mr-4">
-                  <svg className="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
-                  </svg>
-                </div>
-                <CardTitle className="text-lg">Settings</CardTitle>
-              </div>
-              <p className="text-muted-foreground">Customize your experience</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center mr-4">
-                  <svg className="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                  </svg>
-                </div>
-                <CardTitle className="text-lg">Support</CardTitle>
-              </div>
-              <p className="text-muted-foreground">Get help and contact us</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Card>
+        {/* Quick Action Buttons */}
+        <Card className="mb-8">
           <CardHeader>
-            <CardTitle className="text-2xl">Quick Actions</CardTitle>
+            <CardTitle className="text-xl">Track Your Journey</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-wrap gap-4">
-              <Button>
-                Create New Project
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <Button
+                onClick={handleLogMood}
+                className="h-auto p-4 flex flex-col items-center gap-2 bg-blue-600 hover:bg-blue-700"
+              >
+                <span className="text-2xl">😊</span>
+                <span className="font-medium">Log Mood</span>
               </Button>
-              <Button variant="outline">
-                View Reports
+
+              <Button
+                onClick={handleLogGratitude}
+                variant="outline"
+                className="h-auto p-4 flex flex-col items-center gap-2 border-orange-200 text-orange-700 hover:bg-orange-50"
+              >
+                <span className="text-2xl">🙏</span>
+                <span className="font-medium">Log Gratitude</span>
+              </Button>
+
+              <Button
+                onClick={handleViewMoodHistory}
+                variant="outline"
+                className="h-auto p-4 flex flex-col items-center gap-2 border-blue-200 text-blue-700 hover:bg-blue-50"
+              >
+                <span className="text-2xl">📈</span>
+                <span className="font-medium">Mood History</span>
+              </Button>
+
+              <Button
+                onClick={handleViewGratitudeHistory}
+                variant="outline"
+                className="h-auto p-4 flex flex-col items-center gap-2 border-orange-200 text-orange-700 hover:bg-orange-50"
+              >
+                <span className="text-2xl">📖</span>
+                <span className="font-medium">Gratitude Journal</span>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Recent Activity Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Recent Mood */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <span>🎭</span>
+                Recent Mood (Last 10)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {recentMoods.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <p>No mood entries yet. Start tracking your feelings!</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {recentMoods.map((mood) => (
+                    <div key={mood.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">
+                          {getEmojiForRating(mood.rating)}
+                        </span>
+                        <div>
+                          <p className="font-medium text-gray-900">
+                            Rating: {mood.rating}/5
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {formatMoodTimestamp(mood.created_at)}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-1 justify-end">
+                        {mood.tags.slice(0, 3).map((tag, index) => (
+                          <span
+                            key={index}
+                            className="px-2 py-1 bg-white text-xs text-gray-700 rounded-full border"
+                          >
+                            {tag.replace(/_/g, ' ')}
+                          </span>
+                        ))}
+                        {mood.tags.length > 3 && (
+                          <span className="px-2 py-1 bg-gray-200 text-xs text-gray-600 rounded-full">
+                            +{mood.tags.length - 3}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {recentMoods.length > 0 && (
+                <div className="mt-4 pt-4 border-t">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleViewMoodHistory}
+                    className="w-full"
+                  >
+                    View All Entries
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Recent Gratitude */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <span>🙏</span>
+                Recent Gratitude (Last 5)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {recentGratitude.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <p>No gratitude entries yet. Start practicing gratitude!</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {recentGratitude.map((entry) => (
+                    <div key={entry.id} className="p-3 bg-orange-50 rounded-lg border border-orange-100">
+                      <p className="text-gray-800 mb-2 leading-relaxed">
+                        "{truncateGratitudeContent(entry.content, 80)}"
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {formatGratitudeTimestamp(entry.created_at)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {recentGratitude.length > 0 && (
+                <div className="mt-4 pt-4 border-t">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleViewGratitudeHistory}
+                    className="w-full"
+                  >
+                    View All Entries
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Footer Actions */}
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button variant="outline" onClick={() => navigate('/profile')}>
+                Edit Profile
               </Button>
               <Button variant="secondary" onClick={handleSignOut}>
                 Sign Out

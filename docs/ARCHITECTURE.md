@@ -37,36 +37,126 @@ const { data, error } = await supabase.auth.signInWithPassword({ email, password
 - `VITE_SUPABASE_URL`: Your Supabase project URL
 - `VITE_SUPABASE_ANON_KEY`: Your Supabase anonymous/public key
 
-### Database Service (`src/services/db.ts`)
+### Database Services
+
+#### Profile Service (`src/services/db.ts`)
 
 **Purpose:** Handles all database operations related to user profiles.
 
 **Functions:**
 
-#### `getProfile(session: AuthSession | null)`
+##### `getProfile(session: AuthSession | null)`
 - **Purpose:** Fetches user profile data from the 'profiles' table
 - **Parameters:** Supabase session object
 - **Returns:** Profile data or null
 - **Error Handling:** Logs errors and returns null on failure
 
-#### `updateProfile(session: AuthSession, updates: { username: string; language_pref: string })`
+##### `updateProfile(session: AuthSession, updates: { username: string; language_pref: string })`
 - **Purpose:** Updates user profile information
 - **Parameters:** Session and update object
 - **Returns:** void (throws on error)
 - **Error Handling:** Throws error for caller to handle
 
-#### `createProfile(user: any)`
+##### `createProfile(user: any)`
 - **Purpose:** Creates a new profile for newly registered users
 - **Parameters:** User object from Supabase auth
 - **Returns:** void
 - **Default Values:** Uses email prefix as default username
 
-**Database Schema (profiles table):**
+#### Mood Service (`src/services/mood.ts`)
+
+**Purpose:** Handles all mood logging operations and emoji/tag utilities.
+
+**Core Functions:**
+
+##### `createMoodLog(moodData: MoodLogCreate): Promise<MoodLog | null>`
+- **Purpose:** Creates new mood log entry with user authentication
+- **Parameters:** Mood data with rating and tags
+- **Returns:** Complete mood log or null on error
+- **Features:** Automatic user_id assignment, comprehensive error handling
+
+##### `getMoodLogs(limit?: number): Promise<MoodLog[]>`
+- **Purpose:** Fetches user's mood log history
+- **Parameters:** Optional limit for number of entries
+- **Returns:** Array of user's mood logs (newest first)
+- **Features:** Automatic user filtering, timestamp-based ordering
+
+##### `getMoodLogById(id: string): Promise<MoodLog | null>`
+- **Purpose:** Fetches specific mood log by ID
+- **Parameters:** Mood log UUID
+- **Returns:** Single mood log or null
+
+**Utility Functions:**
+
+##### `getEmojiForRating(rating: 1-5): string`
+- **Returns:** Corresponding emoji for mood rating
+
+##### `getTagsForRating(rating: 1-5): string[]`
+- **Returns:** Context-appropriate tags for mood rating
+
+##### `formatMoodTimestamp(created_at: string): string`
+- **Returns:** Formatted timestamp with user timezone
+- **Format:** "Thursday 11 September, 23:15"
+
+#### Gratitude Service (`src/services/gratitude.ts`)
+
+**Purpose:** Handles all gratitude journaling operations and content utilities.
+
+**Core Functions:**
+
+##### `createGratitudeEntry(entryData: GratitudeEntryCreate): Promise<GratitudeEntry | null>`
+- **Purpose:** Creates new gratitude entry with user authentication
+- **Parameters:** Entry data with content
+- **Returns:** Complete gratitude entry or null on error
+- **Features:** Automatic user_id assignment, content trimming
+
+##### `getGratitudeEntries(limit?: number): Promise<GratitudeEntry[]>`
+- **Purpose:** Fetches user's gratitude entry history
+- **Parameters:** Optional limit for number of entries
+- **Returns:** Array of user's gratitude entries (newest first)
+- **Features:** Automatic user filtering, timestamp-based ordering
+
+##### `getGratitudeEntryById(id: string): Promise<GratitudeEntry | null>`
+- **Purpose:** Fetches specific gratitude entry by ID
+- **Parameters:** Gratitude entry UUID
+- **Returns:** Single gratitude entry or null
+
+**Utility Functions:**
+
+##### `formatGratitudeTimestamp(created_at: string): string`
+- **Returns:** Formatted timestamp with user timezone
+- **Format:** "Thursday 11 September, 23:15"
+
+##### `truncateGratitudeContent(content: string, maxLength: number): string`
+- **Returns:** Truncated content with ellipsis if needed
+
+**Database Schema:**
 ```sql
+-- Profiles table
 CREATE TABLE profiles (
   user_id UUID REFERENCES auth.users(id) PRIMARY KEY,
   username TEXT,
-  language_pref TEXT
+  language_pref TEXT DEFAULT 'en',
+  onboarding_completed BOOLEAN DEFAULT FALSE,
+  referral_source TEXT,
+  objectives TEXT[] -- Array for multi-select objectives
+);
+
+-- Mood logs table
+CREATE TABLE mood_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  rating SMALLINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+  tags TEXT[] NOT NULL DEFAULT '{}',
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+-- Gratitude entries table
+CREATE TABLE gratitude_entries (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 ```
 
@@ -212,6 +302,100 @@ const { user, session, loading } = useAuth();
 - Spanish (es)
 - Stored in `language_pref` database field
 - Ready for future i18n implementation
+
+### Mood Logging Pages
+
+#### Mood Rating Page (`src/pages/mood/MoodRatingPage.tsx`)
+
+**Purpose:** Entry point for mood logging with emoji-based rating selection.
+
+**Features:**
+- Visual emoji selection (😣😕😐🙂😄) mapped to 1-5 scale
+- Descriptive labels for each mood rating
+- Back navigation to dashboard
+- Skip option to cancel mood logging
+- Consistent TopBar and BottomActionBar usage
+
+**Flow Progression:**
+1. User selects mood emoji/rating
+2. Passes selected rating to next step via route state
+3. Continues to mood tags selection or can skip
+
+#### Mood Tags Page (`src/pages/mood/MoodTagsPage.tsx`)
+
+**Purpose:** Context-aware tag selection for mood refinement.
+
+**Features:**
+- Dynamic tag suggestions based on selected mood rating
+- Custom tag addition with validation
+- Tag removal functionality
+- Multi-select with visual feedback
+- Progress persistence between navigation steps
+
+**Tag Logic:**
+- Rating 1: anxiety, stressed, sad, tired, overwhelmed, lonely, frustrated, burnt_out
+- Rating 2: stressed, tired, irritable, overwhelmed, flat, sad, frustrated, hopeful
+- Rating 3: flat, calm, reflective, meh, hopeful, focused
+- Rating 4: content, focused, productive, grateful, optimistic, energized, proud
+- Rating 5: joyful, grateful, inspired, content, proud, energized, optimistic
+
+#### Mood Confirm Page (`src/pages/mood/MoodConfirmPage.tsx`)
+
+**Purpose:** Review mood entry before saving to database.
+
+**Features:**
+- Visual summary with emoji and rating
+- Tag list display with removal option
+- Edit functionality to return to previous step
+- Save operation with loading states
+- Success navigation to dashboard
+
+**Data Validation:**
+- Ensures user authentication before save
+- Validates rating and tags presence
+- Error handling for failed saves
+
+#### Mood History Page (`src/pages/mood/MoodHistoryPage.tsx`)
+
+**Purpose:** Timeline view of all user's past mood entries.
+
+**Features:**
+- Chronological display (newest first)
+- Emoji and rating visualization
+- Tag display with truncation
+- Timestamp formatting with user timezone
+- Empty state with call-to-action
+- Quick navigation to log new mood
+
+### Gratitude Journaling Pages
+
+#### Gratitude Today Page (`src/pages/gratitude/GratitudeTodayPage.tsx`)
+
+**Purpose:** Simple journaling interface for daily gratitude practice.
+
+**Features:**
+- Large textarea for reflection writing
+- Character counter (1000 char limit)
+- Helpful example prompts
+- User authentication validation
+- Progress indicator and validation
+
+**Content Guidelines:**
+- Minimum 3 characters (basic validation)
+- Helpful examples provided for inspiration
+- Character limit prevents overly long entries
+- Focus on meaningful reflections
+
+#### Gratitude History Page (`src/pages/gratitude/GratitudeHistoryPage.tsx`)
+
+**Purpose:** Comprehensive view of gratitude journaling history.
+
+**Features:**
+- Full text display of gratitude entries
+- Chronological timeline (newest first)
+- Timestamp formatting with timezone awareness
+- Empty state with encouragement
+- Export/import considerations for future development
 
 ## Core Components
 

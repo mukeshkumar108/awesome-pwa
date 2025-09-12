@@ -70,7 +70,60 @@ CREATE TRIGGER update_profiles_updated_at
     EXECUTE FUNCTION update_updated_at_column();
 ```
 
-### Step 2: Verify Table Creation
+### Step 2: Create Mood Logs Table
+
+```sql
+-- Create mood_logs table for mood tracking
+CREATE TABLE IF NOT EXISTS public.mood_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  rating SMALLINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+  tags TEXT[] NOT NULL DEFAULT '{}',
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+-- Create index for efficient queries
+CREATE INDEX IF NOT EXISTS idx_mood_logs_user_created
+  ON public.mood_logs (user_id, created_at DESC);
+
+-- Enable RLS
+ALTER TABLE public.mood_logs ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies for mood_logs
+CREATE POLICY IF NOT EXISTS "Users can read own mood logs" ON public.mood_logs
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY IF NOT EXISTS "Users can insert own mood logs" ON public.mood_logs
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+```
+
+### Step 3: Create Gratitude Entries Table
+
+```sql
+-- Create gratitude_entries table for gratitude logging
+CREATE TABLE IF NOT EXISTS public.gratitude_entries (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+-- Create index for efficient queries
+CREATE INDEX IF NOT EXISTS idx_gratitude_user_created
+  ON public.gratitude_entries (user_id, created_at DESC);
+
+-- Enable RLS
+ALTER TABLE public.gratitude_entries ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies for gratitude_entries
+CREATE POLICY IF NOT EXISTS "Users can read own gratitude entries" ON public.gratitude_entries
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY IF NOT EXISTS "Users can insert own gratitude entries" ON public.gratitude_entries
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+```
+
+### Step 4: Verify Table Creation
 
 ```sql
 -- Check table was created correctly

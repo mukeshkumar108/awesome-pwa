@@ -12,16 +12,36 @@ src/
 ├── components/          # Reusable UI components
 │   ├── ui/             # shadcn/ui base components
 │   ├── Layout.tsx      # Main layout wrapper
-│   └── Navbar.tsx      # Navigation component
+│   ├── Navbar.tsx      # Navigation component
+│   ├── TopBar.tsx      # Reusable header with back navigation
+│   └── BottomActionBar.tsx # Configurable action buttons
 ├── pages/              # Route components
 │   ├── DashboardPage.tsx
 │   ├── ProfilePage.tsx
-│   └── LoginPage.tsx
+│   ├── LoginPage.tsx
+│   ├── mood/          # Mood logging feature
+│   │   ├── index.ts
+│   │   ├── MoodRatingPage.tsx     # Emoji selection (😣😕😐🙂😄)
+│   │   ├── MoodTagsPage.tsx       # Tag selection with custom tags
+│   │   ├── MoodConfirmPage.tsx    # Review & save mood log
+│   │   └── MoodHistoryPage.tsx    # Timeline view of mood entries
+│   ├── gratitude/     # Gratitude journaling feature
+│   │   ├── index.ts
+│   │   ├── GratitudeTodayPage.tsx # Textarea journaling
+│   │   └── GratitudeHistoryPage.tsx # History of gratitude entries
+│   └── onboarding/    # User onboarding flow
+│       ├── index.ts
+│       ├── OnboardingLayout.tsx
+│       ├── OnboardingWizard.tsx
+│       ├── types.ts
+│       └── steps/
 ├── context/            # React context providers
 │   └── AuthContext.tsx
 ├── services/           # External API and DB logic
 │   ├── supabase.ts     # Supabase client
-│   └── db.ts          # Database operations
+│   ├── db.ts          # Profile database operations
+│   ├── mood.ts        # Mood logging CRUD operations
+│   └── gratitude.ts   # Gratitude journaling CRUD operations
 ├── lib/               # Utility functions
 │   └── utils.ts       # General utilities
 └── assets/            # Static assets

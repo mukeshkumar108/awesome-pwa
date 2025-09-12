@@ -9,6 +9,8 @@ import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import { MoodRatingPage, MoodTagsPage, MoodConfirmPage, MoodHistoryPage } from './pages/mood';
+import { GratitudeTodayPage, GratitudeHistoryPage } from './pages/gratitude';
 import './index.css';
 
 // A private route component that checks for user authentication.
@@ -60,6 +62,14 @@ function App() {
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/profile" element={<ProfilePage />} />
             </Route>
+            {/* Mood Logging Routes */}
+            <Route path="/mood/rating" element={<MoodRatingPage />} />
+            <Route path="/mood/tags" element={<MoodTagsPage />} />
+            <Route path="/mood/confirm" element={<MoodConfirmPage />} />
+            <Route path="/mood/history" element={<MoodHistoryPage />} />
+            {/* Gratitude Logging Routes */}
+            <Route path="/gratitude/today" element={<GratitudeTodayPage />} />
+            <Route path="/gratitude/history" element={<GratitudeHistoryPage />} />
           </Route>
         </Routes>
       </AuthProvider>
