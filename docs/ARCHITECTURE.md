@@ -305,21 +305,52 @@ const { user, session, loading } = useAuth();
 
 ### Mood Logging Pages
 
-#### Mood Rating Page (`src/pages/mood/MoodRatingPage.tsx`)
+#### Interactive Mood Selection Pages
 
-**Purpose:** Entry point for mood logging with emoji-based rating selection.
+#### MoodRatingPage (`src/pages/mood/MoodRatingPage.tsx`)
+
+**Purpose:** Full-screen interactive mood selection with swipe gestures and dynamic backgrounds.
+
+**New Interactive Features:**
+- Page-level swipe gestures (left/right to change mood)
+- Dynamic background colors that smoothly transition
+- Large animated emoji with spring transitions
+- Keyboard navigation (arrow keys)
+- Intuitive dots navigation at bottom
+- Continue button for user-controlled confirmation
+
+**Core Components:**
+- **MoodSlider Component** (`src/components/ui/mood-slider.tsx`): Handles all interaction logic
+- **Page Background**: Dynamic color interpolation based on mood
+- **Continue Button**: Fixed at bottom for clear user control
+- **Accessibility**: Full ARIA support, keyboard navigation, haptic feedback
+
+#### MoodSlider Component (`src/components/ui/mood-slider.tsx`)
+
+**Purpose:** Interactive mood selection with page-swipe functionality and visual feedback.
 
 **Features:**
-- Visual emoji selection (😣😕😐🙂😄) mapped to 1-5 scale
-- Descriptive labels for each mood rating
-- Back navigation to dashboard
-- Skip option to cancel mood logging
-- Consistent TopBar and BottomActionBar usage
+- Full-screen swipe gesture detection using `@use-gesture/react`
+- Smooth emoji transitions powered by `framer-motion`
+- Dynamic background color interpolation
+- Haptic feedback on mobile devices
+- Keyboard accessibility (arrow keys)
+- Dot navigation for direct mood selection
+- Continue button for confirmation
 
-**Flow Progression:**
-1. User selects mood emoji/rating
-2. Passes selected rating to next step via route state
-3. Continues to mood tags selection or can skip
+**Technical Implementation:**
+- **Gesture Handling**: Detects swipe direction and distance
+- **State Management**: Smooth rating transitions with motion values
+- **Visual Feedback**: Animated emoji scaling and background transitions
+- **Accessibility**: Proper ARIA labels and keyboard support
+- **Performance**: Hardware-accelerated animations and touch optimization
+
+**Emoji & Color Mapping:**
+- **Very Low (1)**: 😣 → Cool slate background (`#34495E`)
+- **Low (2)**: 😕 → Cool blue background (`#5DADE2`)
+- **Neutral (3)**: 😐 → Gold background (`#F1C40F`)
+- **Good (4)**: 🙂 → Warm amber background (`#F39C12`)
+- **Very Good (5)**: 😄 → Warm orange background (`#E67E22`)
 
 #### Mood Tags Page (`src/pages/mood/MoodTagsPage.tsx`)
 

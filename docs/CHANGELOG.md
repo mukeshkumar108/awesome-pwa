@@ -5,6 +5,58 @@ All notable changes to the Awesome PWA project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2025-09-13 - Interactive Mood Selection
+
+### Added
+- **Page-Swipe Mood Selection Interface**
+  - Replaced static emoji grid with full-page swipe interactions
+  - Dynamic background colors that change with mood selection
+  - Large animated emoji transitions with spring animations
+  - Continue button for user-controlled confirmation
+  - Intuitive dots navigation at bottom for direct mood selection
+
+- **Enhanced User Experience**
+  - Swipe left/right to browse through moods naturally
+  - Arrow key navigation for keyboard users
+  - Tap dots to jump directly to any mood
+  - Visual feedback with animated emoji scaling
+  - Haptic feedback on mobile devices (optional)
+  - Smooth color transitions across 5 distinct mood states
+
+### Changed
+- **Mood Selection Flow**
+  - Simplified from 3-step (Rating → Tags → Confirm) to elegant 2-step
+  - Interactive mood browsing before confirmation
+  - Removed confirm page for streamlined experience
+  - Continue button provides clear user control
+
+- **Accessibility Improvements**
+  - Full keyboard navigation support (← → arrows)
+  - Proper ARIA labels for screen readers
+  - Focus management with visual indicators
+  - Touch-friendly interface optimized for mobile
+
+### Technical Improvements
+- **New MoodSlider Component**
+  - Built with Framer Motion for smooth animations
+  - Page-level swipe gesture detection
+  - Dynamic background color interpolation
+  - Animated emoji transitions and dot navigation
+  - Comprehensive accessibility features
+
+### Removed
+- **Mood confirm page** and associated routing
+- **Redundant mood confirm references** in codebase
+- **Legacy emoji grid** replaced with swipe interface
+
+### Testing & Validation
+- **End-to-End Flow Testing**: Swipe → Select → Continue → Tags
+- **Accessibility Testing**: Keyboard and screen reader validation
+- **Mobile Responsiveness**: Touch gesture optimization
+- **Performance Testing**: 60fps animations and smooth transitions
+
+---
+
 ## [2.0.0] - 2025-11-09 - User Onboarding & UX Overhaul
 
 ### Added

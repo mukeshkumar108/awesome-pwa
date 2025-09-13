@@ -1,9 +1,20 @@
 # Documentation Version Control
 
 ## Current Version
-**v2.1.0** - Mood Flow Optimization
+**v2.2.0** - Interactive Mood Selection
 
 ## Version History
+
+### v2.2.0 (2025-09-13)
+- ✅ **Minor Release:** Interactive Mood Selection
+  - Page-swipe mood selection with dynamic background colors
+  - Replaced static emoji grid with interactive swipe interface
+  - Continue button for user-controlled confirmation
+  - Full accessibility support with keyboard navigation
+  - Smooth emoji and color transitions powered by Framer Motion
+  - Haptic feedback and touch-optimized gestures
+  - Intuitive dots navigation for direct mood selection
+  - Streamlined 2-step mood flow (Browse → Continue → Tags)
 
 ### v2.1.0 (2025-09-13)
 - ✅ **Minor Release:** Mood Flow Optimization

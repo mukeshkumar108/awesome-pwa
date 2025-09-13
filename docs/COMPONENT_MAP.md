@@ -71,6 +71,28 @@ LoginPage
 ForgotPasswordPage / ResetPasswordPage
 ├── Minimal form components
 └── Clear success messaging
+
+#### Interactive Mood Components (v2.2.0)
+```
+MoodRatingPage
+├── MoodSlider (full-page interactive component)
+│   ├── Page-level swipe gestures (@use-gesture/react)
+│   ├── Dynamic background colors per mood
+│   ├── Large animated emoji transitions (framer-motion)
+│   ├── Continue button for user confirmation
+│   ├── Dot navigation for direct mood selection
+│   ├── Keyboard navigation (arrow keys)
+│   └── Accessibility features (ARIA labels, haptic feedback)
+└── onContinue callback for navigation to tags page
+
+MoodSlider Component Architecture
+├── Gesture Layer (useDrag from @use-gesture/react)
+├── Animation Layer (framer-motion AnimatePresence)
+├── State Management (rating value, drag offset)
+├── Visual Feedback (background interpolation, emoji scaling)
+├── Navigation (dot clicks, keyboard arrows, swipe)
+└── Confirmation (Continue button with proper styling)
+```
 ```
 
 ### Component Dependencies
