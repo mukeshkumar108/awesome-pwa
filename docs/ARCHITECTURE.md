@@ -339,21 +339,22 @@ const { user, session, loading } = useAuth();
 - Rating 4: content, focused, productive, grateful, optimistic, energized, proud
 - Rating 5: joyful, grateful, inspired, content, proud, energized, optimistic
 
-#### Mood Confirm Page (`src/pages/mood/MoodConfirmPage.tsx`)
+#### Streamlined Mood Flow (v2.1.0)
 
-**Purpose:** Review mood entry before saving to database.
+**New Flow:** Rating → Tags → Auto-save → Dashboard
 
-**Features:**
-- Visual summary with emoji and rating
-- Tag list display with removal option
-- Edit functionality to return to previous step
-- Save operation with loading states
-- Success navigation to dashboard
+**Key Changes:**
+- **Removed**: Confirm/review step for instant saves
+- **Added**: Auto-save functionality in tags page
+- **Enhanced**: Immediate dashboard redirects with success messaging
+- **Preserved**: Skip functionality and full feature parity
 
-**Data Validation:**
-- Ensures user authentication before save
-- Validates rating and tags presence
-- Error handling for failed saves
+**Technical Implementation:**
+- Auto-save triggers on Continue/Skip button presses
+- Navigation state passes success indicators to dashboard
+- Dashboard refreshes automatically showing new entries
+- Error handling allows retry on failed saves
+- Rating guard prevents direct tag page access
 
 #### Mood History Page (`src/pages/mood/MoodHistoryPage.tsx`)
 

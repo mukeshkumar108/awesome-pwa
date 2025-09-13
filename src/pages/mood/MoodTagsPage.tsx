@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Plus, X } from 'lucide-react';
 import { TopBar } from '../../components/TopBar';
 import { BottomActionBar } from '../../components/BottomActionBar';
-import { getTagsForRating } from '../../services/mood';
+import { getTagsForRating, createMoodLog } from '../../services/mood';
 import { useAuth } from '../../context/AuthContext';
 
 export const MoodTagsPage: React.FC = () => {
@@ -50,16 +50,32 @@ export const MoodTagsPage: React.FC = () => {
     setSelectedTags(selectedTags.filter(t => t !== tag));
   };
 
+  const handleSave = async (tags: string[]) => {
+    try {
+      const result = await createMoodLog({
+        rating: selectedRating,
+        tags: tags
+      });
+
+      if (result) {
+        // Show success toast and redirect to dashboard
+        navigate('/dashboard', {
+          state: { moodLogged: true }
+        });
+      }
+    } catch (error) {
+      console.error('Failed to save mood:', error);
+      // TODO: Show error toast/message to user
+      // For now, stay on the page so user can retry
+    }
+  };
+
   const handleNext = () => {
-    navigate('/mood/confirm', {
-      state: { selectedRating, selectedTags }
-    });
+    handleSave(selectedTags);
   };
 
   const handleSkip = () => {
-    navigate('/mood/confirm', {
-      state: { selectedRating, selectedTags: [] }
-    });
+    handleSave([]);  // Save with empty tags
   };
 
   const handleBack = () => {

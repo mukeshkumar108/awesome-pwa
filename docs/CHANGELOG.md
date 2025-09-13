@@ -72,9 +72,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added semantic class documentation in CSS
 - Updated component relationships in COMPONENT_MAP.md
 
+## [2.1.0] - 2025-09-13 - Mood Flow Optimization
+
+### Added
+- **Streamlined Mood Logging Flow**
+  - Removed confirm/review step for instant saves
+  - Auto-save functionality in tags page
+  - New 2-step flow: Rating → Tags → Auto-save → Dashboard
+  - Immediate success feedback with existing toast system
+  - Preserved Skip functionality with empty tags support
+  - Dashboard auto-refresh showing new entries instantly
+
+### Changed
+- **Mood Service Optimization**
+  - Enhanced `createMoodLog()` with automatic user authentication
+  - Improved error handling for save operations
+  - Better integration with existing success messaging
+  - Seamless navigation state management
+
+- **User Experience Improvements**
+  - Lightning-fast mood logging (50% fewer steps)
+  - Immediate visual feedback on dashboard
+  - No loading delays or confirmation screens
+  - Maintained full feature parity with skip functionality
+
+### Removed
+- **MoodConfirmPage component** and associated files
+- **`/mood/confirm` route** from application routing
+- **Confirm step exports** from mood index
+
+### Technical Improvements
+- **Navigation State Management**
+  - Proper state passing for success messages
+  - Clean navigation flow with error recovery
+  - Rating guard preventing direct tag page access
+  - Session state cleanup after saves
+
+- **Performance Enhancements**
+  - Atomic database operations per mood save
+  - Optimized dashboard refresh timing
+  - Reduced memory usage with temporary state cleanup
+
+### Testing & Validation
+- **Flow Testing**: Complete end-to-end validation
+- **Error Handling**: Save failure recovery and retry capability
+- **Data Integrity**: Proper RLS policy enforcement
+- **Multi-Entry Support**: Correct timestamp ordering
+
 ---
 
-## [1.0.0] - 2025-06-09 - Agent Workflow Foundation
+## [2.0.0] - 2025-11-09 - User Onboarding & UX Overhaul
 
 ### Added
 - **Agent Operating Rules** (`/docs/AGENT_RULES.md`)

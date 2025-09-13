@@ -1,9 +1,18 @@
 # Documentation Version Control
 
 ## Current Version
-**v2.0.0** - User Onboarding & UX Overhaul
+**v2.1.0** - Mood Flow Optimization
 
 ## Version History
+
+### v2.1.0 (2025-09-13)
+- ✅ **Minor Release:** Mood Flow Optimization
+  - Streamlined Mood logging from 3-step to 2-step flow
+  - Removed confirm/review step for instant saves
+  - Auto-save functionality in tags page with error handling
+  - Immediate dashboard redirects with success messaging
+  - Preserved Skip functionality and full feature parity
+  - Dashboard auto-refresh showing new entries instantly
 
 ### v2.0.0 (2025-11-09)
 - ✅ **Major Release:** User Onboarding & UX Overhaul
