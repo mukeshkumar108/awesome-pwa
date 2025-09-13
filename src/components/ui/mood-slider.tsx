@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
 import { useDrag } from '@use-gesture/react';
 
 export interface MoodSliderProps {
@@ -13,45 +13,143 @@ const MOOD_EMOJIS = ['😣', '😕', '😐', '🙂', '😄'];
 const BACKGROUND_COLORS = ['#34495E', '#5DADE2', '#F1C40F', '#F39C12', '#E67E22'];
 
 const MoodSlider: React.FC<MoodSliderProps> = ({ value, onChange, onContinue, className = '' }) => {
-  const [dragOffset, setDragOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [dragStartTime, setDragStartTime] = useState<number | null>(null);
 
-  // Handle swipe/drag gestures on the entire page
+  // Motion values for smooth animations
+  const dragX = useMotionValue(0);
+  const springX = useSpring(dragX, {
+    damping: 25,
+    stiffness: 300,
+    mass: 0.8
+  });
+
+  // Check for reduced motion preference
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Native mobile spring configuration
+  const nativeSpring = {
+    type: "spring" as const,
+    damping: prefersReducedMotion ? 30 : 25,
+    stiffness: prefersReducedMotion ? 400 : 300,
+    mass: 0.8,
+    bounce: prefersReducedMotion ? 0 : 0.15
+  };
+
+  // Prevent page scroll during interaction
+  useEffect(() => {
+    const preventScroll = (e: TouchEvent) => {
+      if (isDragging) {
+        e.preventDefault();
+      }
+    };
+
+    const preventWheel = (e: WheelEvent) => {
+      if (isDragging) {
+        e.preventDefault();
+      }
+    };
+
+    if (isDragging) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
+      document.addEventListener('touchmove', preventScroll, { passive: false });
+      document.addEventListener('wheel', preventWheel, { passive: false });
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.height = '';
+      document.removeEventListener('touchmove', preventScroll);
+      document.removeEventListener('wheel', preventWheel);
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.height = '';
+      document.removeEventListener('touchmove', preventScroll);
+      document.removeEventListener('wheel', preventWheel);
+    };
+  }, [isDragging]);
+
+  // Handle swipe/drag gestures with native mobile feel
   const bind = useDrag(
-    ({ active, movement: [mx], direction: [xDir] }) => {
-      const triggerThreshold = 50; // Minimum distance to trigger change
+    ({ active, movement: [mx], direction: [xDir], velocity: [vx], tap }) => {
+      const triggerThreshold = prefersReducedMotion ? 30 : 40;
 
-      if (!active) {
-        // On drag end, check if we should change the mood
-        if (Math.abs(mx) > triggerThreshold) {
+      if (tap) return; // Ignore taps
+
+      if (active) {
+        setIsDragging(true);
+        if (dragStartTime === null) {
+          setDragStartTime(Date.now());
+        }
+
+        // Natural drag feel with slight resistance
+        const resistance = Math.max(0.7, Math.min(1, 1 - Math.abs(mx) / 300));
+        dragX.set(mx * resistance);
+
+        // Subtle haptic feedback during drag (very gentle)
+        if (Math.abs(mx) > 20 && !prefersReducedMotion) {
+          navigator.vibrate?.([1]); // Micro vibration
+        }
+      } else {
+        // Calculate velocity and time for momentum
+        const velocity = Math.abs(vx);
+
+        // Determine if this is a significant swipe
+        const isSignificantSwipe = Math.abs(mx) > triggerThreshold;
+        const isFastSwipe = velocity > (prefersReducedMotion ? 0.8 : 0.5);
+
+        if (isSignificantSwipe || (isFastSwipe && Math.abs(mx) > 15)) {
           const currentIndex = Math.round(value) - 1;
 
-          if (xDir < 0 && currentIndex < 4) {
-            // Swipe left - next mood
+          // Calculate direction with momentum consideration
+          let shouldGoNext = xDir < 0; // Left swipe = next
+
+          // Strong fast swipes should always trigger
+          if (isFastSwipe && Math.abs(mx) > 20) {
+            shouldGoNext = mx < 0 ? true : false;
+          }
+
+          // Apply the change with native feedback
+          if (shouldGoNext && currentIndex < 4) {
             onChange(currentIndex + 2);
-          } else if (xDir > 0 && currentIndex > 0) {
-            // Swipe right - previous mood
+            // Success haptic pattern
+            if (!prefersReducedMotion) {
+              navigator.vibrate?.([10, 5, 10]);
+            }
+          } else if (!shouldGoNext && currentIndex > 0) {
             onChange(currentIndex);
+            // Success haptic pattern
+            if (!prefersReducedMotion) {
+              navigator.vibrate?.([10, 5, 10]);
+            }
+          } else if (Math.abs(mx) > triggerThreshold) {
+            // Edge bounce - gentle haptic
+            if (!prefersReducedMotion) {
+              navigator.vibrate?.([5]);
+            }
           }
         }
 
-        setDragOffset(0);
+        // Smooth spring back to center
+        dragX.set(0);
         setIsDragging(false);
-
-        // Haptic feedback on mobile
-        if (Math.abs(mx) > triggerThreshold && navigator.vibrate) {
-          navigator.vibrate(20);
-        }
-      } else {
-        // During drag, show visual feedback
-        setIsDragging(true);
-        setDragOffset(mx * 0.3); // Dampen the visual feedback
+        setDragStartTime(null);
       }
     },
     {
-      filterTaps: false,
+      filterTaps: true,
       axis: 'x',
-      swipe: { velocity: 0.1, distance: 10 }
+      swipe: {
+        velocity: prefersReducedMotion ? 0.6 : 0.3,
+        distance: prefersReducedMotion ? 15 : 10
+      }
     }
   );
 
@@ -98,13 +196,13 @@ const MoodSlider: React.FC<MoodSliderProps> = ({ value, onChange, onContinue, cl
             animate={{
               scale: 1,
               rotate: 0,
-              x: isDragging ? dragOffset : 0
+              x: (prefersReducedMotion || !isDragging) ? 0 : springX.get()
             }}
-            exit={{ scale: 0, rotate: 180 }}
-            transition={{
-              type: "spring",
-              damping: 20,
-              stiffness: 300
+            exit={{ scale: isDragging ? 0.8 : 0, rotate: 180 }}
+            transition={nativeSpring}
+            style={{
+              x: springX,
+              pointerEvents: isDragging ? 'none' : 'auto'
             }}
             className="text-8xl mb-8 select-none"
           >
@@ -169,20 +267,28 @@ const MoodSlider: React.FC<MoodSliderProps> = ({ value, onChange, onContinue, cl
         </div>
       </div>
 
-      {/* Swipe hint animation */}
+      {/* Subtle drag indicator */}
       <AnimatePresence>
-        {isDragging && (
+        {isDragging && !prefersReducedMotion && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
             className="fixed inset-0 pointer-events-none flex items-center justify-center"
           >
             <motion.div
-              animate={{ x: dragOffset > 0 ? 100 : -100 }}
-              className="text-white/50 text-4xl"
+              animate={{
+                y: [0, -10, 0],
+                rotate: [0, 5, -5, 0]
+              }}
+              transition={{
+                duration: 0.8,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              className="text-white/30 text-6xl"
             >
-              {dragOffset > 0 ? '👈' : '👉'}
+              ⚡
             </motion.div>
           </motion.div>
         )}
